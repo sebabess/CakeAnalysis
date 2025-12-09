@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import requests
 from datetime import datetime, timedelta
+import numpy as np 
 
 # ------------------------------------------------------------------
 # Page config
@@ -47,8 +48,11 @@ def get_cake_data():
     # Données historiques (on simule le trend réel vu sur Dune – tu peux remplacer plus tard par Bitquery/Covalent)
     dates = pd.date_range("2023-01-01", datetime.now(), freq="W")
     n = len(dates)
-    tvl = 1.2e9 + (dates - dates[0]).days * -15000 + pd.np.random.randn(n).cumsum() * 1e7
-    volume = 2.5e8 + pd.np.random.randn(n).cumsum() * 2e7
+    rng = np.random.default_rng()  # générateur moderne et stable
+    tvl = 1.2e9 + (dates - dates[0]).days * -15000 + rng.normal(0, 1, n).cumsum() * 1e7
+    volume = 2.5e8 + rng.normal(0, 1, n).cumsum() * 2e7
+    df["price"] = price * (1 + rng.normal(0, 0.02, n).cumsum() / n * 10)
+    df["daily_users"] = 80_000 + rng.normal(0, 1000, n).cumsum()
 
     df = pd.DataFrame({
         "date": dates,
