@@ -68,7 +68,8 @@ def get_cake_data():
 
 # # ------------------------------------------------------------------
 data = get_cake_data()
-print(f"Total Supply (readable): {data}")
+st.caption(str(data))
+# print(f"Total Supply (readable): {data}")
 # df = data["df"]
 
 # # ------------------------------------------------------------------
