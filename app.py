@@ -13,17 +13,17 @@ st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € �
 @st.cache_data(ttl=300)
 def get_cake_data():
     # CoinGecko live
-try:
-    # Fetch on-chain token data for CAKE on BSC
-    r = requests.get(
-        "https://api.coingecko.com/api/v3/onchain/networks/bsc/tokens/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
-        timeout=10
-    )
-    js = r.json()
-    total_supply_raw = js["total_supply"]  # Raw integer (e.g., with decimals factored in)
-    decimals = js["decimals"]  # e.g., 18
-    total_supply_readable = total_supply_raw / (10 ** decimals) if decimals else total_supply_raw
-    holders = js.get("holders", "N/A")  # Approximate holder count
+    try:
+        # Fetch on-chain token data for CAKE on BSC
+        r = requests.get(
+            "https://api.coingecko.com/api/v3/onchain/networks/bsc/tokens/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+            timeout=10
+        )
+        js = r.json()
+        total_supply_raw = js["total_supply"]  # Raw integer (e.g., with decimals factored in)
+        decimals = js["decimals"]  # e.g., 18
+        total_supply_readable = total_supply_raw / (10 ** decimals) if decimals else total_supply_raw
+        holders = js.get("holders", "N/A")  # Approximate holder count
     return total_supply_readable
 
     
