@@ -24,6 +24,8 @@ def get_cake_data():
         decimals = js["decimals"]  # e.g., 18
         total_supply_readable = total_supply_raw / (10 ** decimals) if decimals else total_supply_raw
         holders = js.get("holders", "N/A")  # Approximate holder count
+    except:
+        total_supply_readable=0
     return total_supply_readable
 
     
