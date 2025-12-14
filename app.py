@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 import numpy as np
 from datetime import datetime
+from web3 import Web3
 
 st.set_page_config(page_title="CAKE Analysis", layout="wide", page_icon="pancake")
 st.title("PancakeSwap CAKE Analysis – Clone gratuit & illimité")
@@ -11,22 +12,22 @@ st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € �
 
 # ------------------------------------------------------------------
 @st.cache_data(ttl=300)
-def get_cake_data():
-    # CoinGecko live
-    try:
-        # Fetch on-chain token data for CAKE on BSC
-        r = requests.get(
-            "https://api.coingecko.com/api/v3/onchain/networks/bsc/tokens/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
-            timeout=10
-        )
-        js = r.json()
-        total_supply_raw = js["total_supply"]  # Raw integer (e.g., with decimals factored in)
-        decimals = js["decimals"]  # e.g., 18
-        total_supply_readable = total_supply_raw / (10 ** decimals) if decimals else total_supply_raw
-        holders = js.get("holders", "N/A")  # Approximate holder count
-    except:
-        total_supply_readable=0
-    return total_supply_readable
+# def get_cake_data():
+#     # CoinGecko live
+#     try:
+#         # Fetch on-chain token data for CAKE on BSC
+#         r = requests.get(
+#             "https://api.coingecko.com/api/v3/onchain/networks/bsc/tokens/0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+#             timeout=10
+#         )
+#         js = r.json()
+#         total_supply_raw = js["total_supply"]  # Raw integer (e.g., with decimals factored in)
+#         decimals = js["decimals"]  # e.g., 18
+#         total_supply_readable = total_supply_raw / (10 ** decimals) if decimals else total_supply_raw
+#         holders = js.get("holders", "N/A")  # Approximate holder count
+#     except:
+#         total_supply_readable=0
+#     return total_supply_readable
 
     
 #     try:
@@ -67,8 +68,77 @@ def get_cake_data():
 #     return {"price": price, "market_cap": market_cap, "df": df}
 
 # # ------------------------------------------------------------------
-data = get_cake_data()
-st.caption(str(data))
+# BSC public RPC endpoint (free and reliable)
+bsc_rpc = "https://bsc-dataseed.binance.org/"  # Or use: https://bsc-rpc.publicnode.com
+
+# Connect to BSC
+web3 = Web3(Web3.HTTPProvider(bsc_rpc))
+
+if not web3.is_connected():
+    raise Exception("Failed to connect to BSC RPC")
+
+# Minimal ABI for ERC20/BEP20 functions we need (totalSupply, decimals, name, symbol)
+minimal_abi = [
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "type": "function"
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{"name": "", "type": "uint8"}],
+        "type": "function"
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{"name": "", "type": "string"}],
+        "type": "function"
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [{"name": "", "type": "string"}],
+        "type": "function"
+    }
+]
+
+# Replace with your token contract address
+token_address = "0xe9e7CEA3DedcA5984780Bafc599bd69ADd087D56"  # Example: BUSD on BSC
+
+# Checksum the address
+token_address = web3.to_checksum_address(token_address)
+
+# Create contract instance
+contract = web3.eth.contract(address=token_address, abi=minimal_abi)
+
+# Read totalSupply (raw value in wei-like units)
+raw_supply = contract.functions.totalSupply().call()
+
+# Get decimals to convert to human-readable
+decimals = contract.functions.decimals().call()
+
+# Human-readable total supply
+total_supply = raw_supply / (10 ** decimals)
+
+# Optional: get name and symbol
+name = contract.functions.name().call()
+symbol = contract.functions.symbol().call()
+
+# print(f"Token: {name} ({symbol})")
+# print(f"Total Supply: {total_supply} {symbol}")
+# print(f"Raw Supply: {raw_supply}")
+
+
+
+# data = get_cake_data()
+st.caption(str(total_supply))
 # print(f"Total Supply (readable): {data}")
 # df = data["df"]
 
