@@ -11,7 +11,7 @@ st.title("PancakeSwap CAKE Analysis – Clone gratuit & illimité")
 st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € · refresh toutes les 5 min")
 
 # ------------------------------------------------------------------
-@st.cache_data(ttl=300)
+# @st.cache_data(ttl=300)
 # def get_cake_data():
 #     # CoinGecko live
 #     try:
