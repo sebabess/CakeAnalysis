@@ -69,7 +69,7 @@ st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € �
 
 # # ------------------------------------------------------------------
 # BSC public RPC endpoint (free and reliable)
-bsc_rpc = "https://bsc-dataseed.binance.org/"  # Or use: https://bsc-rpc.publicnode.com
+bsc_rpc = "https://bsc-dataseed.binance.org"  # Or use: https://bsc-rpc.publicnode.com
 
 # Connect to BSC
 web3 = Web3(Web3.HTTPProvider(bsc_rpc))
