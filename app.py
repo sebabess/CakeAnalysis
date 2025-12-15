@@ -10,6 +10,20 @@ st.set_page_config(page_title="CAKE Analysis", layout="wide", page_icon="pancake
 st.title("PancakeSwap CAKE Analysis – Clone gratuit & illimité")
 st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € · refresh toutes les 5 min")
 
+# Extract sheet_id from your Google Sheet URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit
+sheet_id = "1r23_C9_tfjeO-M8dHUn45Avsoq2BE9iBCw3lyU4f5iw"
+sheet_name = "Sheet1"  # Replace with your tab name (URL-encoded if spaces, e.g., "My%20Sheet")
+
+# Reliable format (works as of 2025)
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+
+df = pd.read_csv(url)
+
+print(df.head())
+st.caption(str(df.head()))
+
+
+
 # ------------------------------------------------------------------
 # @st.cache_data(ttl=300)
 # def get_cake_data():
@@ -69,76 +83,76 @@ st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € �
 
 # # ------------------------------------------------------------------
 # BSC public RPC endpoint (free and reliable)
-bsc_rpc = "https://bsc-dataseed.binance.org"  # Or use: https://bsc-rpc.publicnode.com
+# bsc_rpc = "https://bsc-dataseed.binance.org"  # Or use: https://bsc-rpc.publicnode.com
 
-# Connect to BSC
-web3 = Web3(Web3.HTTPProvider(bsc_rpc))
+# # Connect to BSC
+# web3 = Web3(Web3.HTTPProvider(bsc_rpc))
 
-if not web3.is_connected():
-    raise Exception("Failed to connect to BSC RPC")
+# if not web3.is_connected():
+#     raise Exception("Failed to connect to BSC RPC")
 
-# Minimal ABI for ERC20/BEP20 functions we need (totalSupply, decimals, name, symbol)
-minimal_abi = [
-    {
-        "constant": True,
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [{"name": "", "type": "uint256"}],
-        "type": "function"
-    },
-    {
-        "constant": True,
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [{"name": "", "type": "uint8"}],
-        "type": "function"
-    },
-    {
-        "constant": True,
-        "inputs": [],
-        "name": "name",
-        "outputs": [{"name": "", "type": "string"}],
-        "type": "function"
-    },
-    {
-        "constant": True,
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [{"name": "", "type": "string"}],
-        "type": "function"
-    }
-]
+# # Minimal ABI for ERC20/BEP20 functions we need (totalSupply, decimals, name, symbol)
+# minimal_abi = [
+#     {
+#         "constant": True,
+#         "inputs": [],
+#         "name": "totalSupply",
+#         "outputs": [{"name": "", "type": "uint256"}],
+#         "type": "function"
+#     },
+#     {
+#         "constant": True,
+#         "inputs": [],
+#         "name": "decimals",
+#         "outputs": [{"name": "", "type": "uint8"}],
+#         "type": "function"
+#     },
+#     {
+#         "constant": True,
+#         "inputs": [],
+#         "name": "name",
+#         "outputs": [{"name": "", "type": "string"}],
+#         "type": "function"
+#     },
+#     {
+#         "constant": True,
+#         "inputs": [],
+#         "name": "symbol",
+#         "outputs": [{"name": "", "type": "string"}],
+#         "type": "function"
+#     }
+# ]
 
-# Replace with your token contract address
-token_address = "0xe9e7CEA3DedcA5984780Bafc599bd69ADd087D56"  # Example: BUSD on BSC
+# # Replace with your token contract address
+# token_address = "0xe9e7CEA3DedcA5984780Bafc599bd69ADd087D56"  # Example: BUSD on BSC
 
-# Checksum the address
-token_address = web3.to_checksum_address(token_address)
+# # Checksum the address
+# token_address = web3.to_checksum_address(token_address)
 
-# Create contract instance
-contract = web3.eth.contract(address=token_address, abi=minimal_abi)
+# # Create contract instance
+# contract = web3.eth.contract(address=token_address, abi=minimal_abi)
 
-# Read totalSupply (raw value in wei-like units)
-raw_supply = contract.functions.totalSupply().call()
+# # Read totalSupply (raw value in wei-like units)
+# raw_supply = contract.functions.totalSupply().call()
 
-# Get decimals to convert to human-readable
-decimals = contract.functions.decimals().call()
+# # Get decimals to convert to human-readable
+# decimals = contract.functions.decimals().call()
 
-# Human-readable total supply
-total_supply = raw_supply / (10 ** decimals)
+# # Human-readable total supply
+# total_supply = raw_supply / (10 ** decimals)
 
-# Optional: get name and symbol
-name = contract.functions.name().call()
-symbol = contract.functions.symbol().call()
+# # Optional: get name and symbol
+# name = contract.functions.name().call()
+# symbol = contract.functions.symbol().call()
 
-# print(f"Token: {name} ({symbol})")
-# print(f"Total Supply: {total_supply} {symbol}")
-# print(f"Raw Supply: {raw_supply}")
+# # print(f"Token: {name} ({symbol})")
+# # print(f"Total Supply: {total_supply} {symbol}")
+# # print(f"Raw Supply: {raw_supply}")
 
 
 
-# data = get_cake_data()
-st.caption(str(total_supply))
+# # data = get_cake_data()
+# st.caption(str(total_supply))
 # print(f"Total Supply (readable): {data}")
 # df = data["df"]
 
