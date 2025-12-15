@@ -5,3 +5,5 @@ requests
 numpy
 pycoingecko
 web3
+gsheets
+connection
