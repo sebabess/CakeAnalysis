@@ -19,11 +19,11 @@ df = conn.read(worksheet="Sheet1", ttl=30)  # Cache for 30 seconds
 
 st.dataframe(df)
 
-new_row = pd.DataFrame({"1": [Block], "2": [DateTime], "3": [Mint],"4": [Burn],"5": [Supply]})
-updated_df = pd.concat([df, new_row], ignore_index=True)
+# new_row = pd.DataFrame({"1": [Block], "2": [DateTime], "3": [Mint],"4": [Burn],"5": [Supply]})
+# updated_df = pd.concat([df, new_row], ignore_index=True)
         
-conn.update(worksheet="Sheet1", data=updated_df)
-st.success("Row added!")
+# conn.update(worksheet="Sheet1", data=updated_df)
+# st.success("Row added!")
 
 
 
