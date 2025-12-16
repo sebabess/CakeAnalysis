@@ -15,9 +15,9 @@ st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € �
 conn = st.connection("gsheets", type=GSheetsConnection)
 st.caption(conn)
 # Read entire worksheet (returns Pandas DataFrame)
-# df = conn.read(worksheet="Sheet1", ttl=30)  # Cache for 30 seconds
+df = conn.read(worksheet="Sheet1", ttl=30)  # Cache for 30 seconds
 
-# st.dataframe(df)
+st.dataframe(df)
 
 # new_row = pd.DataFrame({"1": [Block], "2": [DateTime], "3": [Mint],"4": [Burn],"5": [Supply]})
 # updated_df = pd.concat([df, new_row], ignore_index=True)
