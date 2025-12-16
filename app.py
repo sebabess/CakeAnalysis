@@ -5,22 +5,38 @@ import requests
 import numpy as np
 from datetime import datetime
 from web3 import Web3
+from streamlit_gsheets import GSheetsConnection
 
 st.set_page_config(page_title="CAKE Analysis", layout="wide", page_icon="pancake")
 st.title("PancakeSwap CAKE Analysis – Clone gratuit & illimité")
 st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € · refresh toutes les 5 min")
 
-# Extract sheet_id from your Google Sheet URL: https://docs.google.com/spreadsheets/d/SHEET_ID/edit
-sheet_id = "1r23_C9_tfjeO-M8dHUn45Avsoq2BE9iBCw3lyU4f5iw"
-sheet_name = "Sheet1"  # Replace with your tab name (URL-encoded if spaces, e.g., "My%20Sheet")
 
-# Reliable format (works as of 2025)
-url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-df = pd.read_csv(url)
+# Read entire worksheet (returns Pandas DataFrame)
+df = conn.read(worksheet="Sheet1", ttl=30)  # Cache for 30 seconds
 
-print(df.head())
-st.caption(str(df.head()))
+st.dataframe(df)
+
+new_row = pd.DataFrame({"1": [Block], "2": [DateTime], "3": [Mint],"4": [Burn],"5": [Supply]})
+updated_df = pd.concat([df, new_row], ignore_index=True)
+        
+conn.update(worksheet="Sheet1", data=updated_df)
+st.success("Row added!")
+
+
+
+
+# sheet_name = "Sheet1"  # Replace with your tab name (URL-encoded if spaces, e.g., "My%20Sheet")
+
+# # Reliable format (works as of 2025)
+# url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+
+# df = pd.read_csv(url)
+
+# print(df.head())
+# st.caption(str(df.head()))
 
 
 
