@@ -5,5 +5,4 @@ requests
 numpy
 pycoingecko
 web3
-streamlit-gsheets-connection
-streamlit_gsheets
+st-gsheets-connection
