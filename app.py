@@ -7,17 +7,37 @@ from datetime import datetime
 from web3 import Web3
 from streamlit_gsheets import GSheetsConnection
 
+
 st.set_page_config(page_title="CAKE Analysis", layout="wide", page_icon="pancake")
 st.title("PancakeSwap CAKE Analysis – Clone gratuit & illimité")
 st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € · refresh toutes les 5 min")
 
 
-conn = st.connection("gsheets", type=GSheetsConnection)
-st.caption(conn)
-# Read entire worksheet (returns Pandas DataFrame)
-df = conn.read(worksheet="Sheet1", ttl=30)  # Cache for 30 seconds
+# conn = st.connection("gsheets", type=GSheetsConnection)
+# st.caption(conn)
+# # Read entire worksheet (returns Pandas DataFrame)
+# df = conn.read(worksheet="Sheet1", ttl=30)  # Cache for 30 seconds
 
-st.dataframe(df)
+# st.dataframe(df)
+
+
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# Read current data
+df_existing = conn.read(worksheet="Sheet1", ttl=0)  # ttl=0 to avoid caching for writes
+
+# Example: New row data (as dict or list, matching your columns)
+new_row = {"Block": 2, "DateTime": 3, "Mint": 123}  # Adjust to your columns
+
+# Append the new row
+df_updated = pd.concat([df_existing, pd.DataFrame([new_row])], ignore_index=True)
+
+# Write back the entire updated DataFrame (overwrites the sheet)
+conn.update(worksheet="Sheet1", data=df_updated)
+
+st.success("New row appended successfully!")
+st.dataframe(conn.read(worksheet="Sheet1"))  # Refresh and display
+
 
 # new_row = pd.DataFrame({"1": [Block], "2": [DateTime], "3": [Mint],"4": [Burn],"5": [Supply]})
 # updated_df = pd.concat([df, new_row], ignore_index=True)
