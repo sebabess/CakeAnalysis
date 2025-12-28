@@ -6,6 +6,7 @@ import numpy as np
 from datetime import datetime
 from web3 import Web3
 from streamlit_gsheets import GSheetsConnection
+import gspread
 
 
 st.set_page_config(page_title="CAKE Analysis", layout="wide", page_icon="pancake")
@@ -20,23 +21,41 @@ st.markdown("Clone parfait de https://dune.com/sebabess/cake-analysis · 0 € �
 
 # st.dataframe(df)
 
-
+# Create the connection (this handles your secrets.toml setup)
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Read current data
-df_existing = conn.read(worksheet="Sheet1", ttl=0)  # ttl=0 to avoid caching for writes
+# Access the underlying gspread client (authenticated properly)
+gc = conn._instance._client  # This works in current versions of the library
 
-# Example: New row data (as dict or list, matching your columns)
-new_row = {"Block": 2, "DateTime": 3, "Mint": 123}  # Adjust to your columns
+# Open the spreadsheet (use the spreadsheet ID or URL from your secrets)
+spreadsheet = gc.open_by_url(st.secrets["connections"]["gsheets"]["spreadsheet"])  # Adjust if needed
 
-# Append the new row
-df_updated = pd.concat([df_existing, pd.DataFrame([new_row])], ignore_index=True)
+# Or by key/ID: gc.open_by_key("your-spreadsheet-id")
 
-# Write back the entire updated DataFrame (overwrites the sheet)
-conn.update(worksheet="Sheet1", data=df_updated)
+worksheet = spreadsheet.worksheet("Sheet1")
 
-st.success("New row appended successfully!")
-st.dataframe(conn.read(worksheet="Sheet1"))  # Refresh and display
+# Read all data as DataFrame
+records = worksheet.get_all_records()  # Returns list of dicts (assumes header row)
+df_existing = pd.DataFrame(records)
+
+# If sheet is empty or no headers, use: worksheet.get_all_values() and handle headers manually
+
+st.dataframe(df_existing)
+
+# --- To append a new row ---
+new_row = ["Value1", "Value2", 123]  # List matching your column order (no headers)
+
+worksheet.append_row(new_row, value_input_option="USER_ENTERED")  # Or "RAW"
+
+st.success("Row appended successfully!")
+
+# Refresh display
+df_updated = pd.DataFrame(worksheet.get_all_records())
+st.dataframe(df_updated)
+
+W
+
+
 
 
 # new_row = pd.DataFrame({"1": [Block], "2": [DateTime], "3": [Mint],"4": [Burn],"5": [Supply]})
